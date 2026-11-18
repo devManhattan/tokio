@@ -53,10 +53,8 @@ class _AutoWebViewPageState extends State<AutoWebViewPage> {
   Widget _buildWebFallback() {
     return Center(
       child: ElevatedButton.icon(
-        onPressed: () => launchUrl(
-          Uri.parse(widget.url),
-          webOnlyWindowName: '_blank',
-        ),
+        onPressed: () =>
+            launchUrl(Uri.parse(widget.url), webOnlyWindowName: '_blank'),
         icon: const Icon(Icons.open_in_new),
         label: const Text('Abrir no navegador'),
       ),

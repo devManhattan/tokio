@@ -7,6 +7,7 @@ import 'package:tokio_marine/features/auth/presentation/pages/register_page.dart
 import 'package:tokio_marine/features/auth/presentation/widgets/auth_card.dart';
 
 import '../../../../helpers/test_app.dart';
+import '../../../../helpers/test_environment.dart';
 
 const _screens = {
   'tall phone': Size(412, 915),
@@ -27,6 +28,7 @@ void main() {
     group('${page.key} layout', () {
       for (final screen in _screens.entries) {
         testWidgets('fits without overflow on ${screen.key}', (tester) async {
+          await TestEnvironment.setUp();
           await pumpPage(tester, page.value, size: screen.value);
 
           expect(tester.takeException(), isNull);
@@ -35,6 +37,7 @@ void main() {
       }
 
       testWidgets('keeps its layout when the keyboard opens', (tester) async {
+        await TestEnvironment.setUp();
         await pumpPage(tester, page.value, size: _screens['regular phone']!);
         final cardTop = tester.getTopLeft(find.byType(AuthCard));
 
@@ -51,6 +54,7 @@ void main() {
   group('submit button', () {
     final lastCardItems = {
       'login': (const LoginPage(), ['Lembrar Sempre', 'Esqueceu a senha?']),
+      'register': (const RegisterPage(), ['Confirmar senha']),
       'forgot password': (const ForgotPasswordPage(), ['Voltar para o login']),
     };
 
@@ -61,6 +65,7 @@ void main() {
         testWidgets(
           'does not cover the ${entry.key} card content on ${screen.key}',
           (tester) async {
+            await TestEnvironment.setUp();
             await pumpPage(tester, page, size: screen.value);
             final button = tester.getRect(find.byType(CircleArrowButton));
             final card = tester.getRect(find.byType(AuthCard));
@@ -79,6 +84,7 @@ void main() {
     }
 
     testWidgets('responds to taps across its whole area', (tester) async {
+      await TestEnvironment.setUp();
       await pumpPage(tester, const LoginPage());
       final button = tester.getRect(find.byType(CircleArrowButton));
       final points = [

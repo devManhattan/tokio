@@ -1,30 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/di/injector.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_checkbox.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/app_toast.dart';
-import '../../../../core/widgets/circle_arrow_button.dart';
+import '../cubit/login_cubit.dart';
 import '../widgets/auth_layout.dart';
 import '../widgets/auth_tabs.dart';
 import '../widgets/social_access.dart';
+import '../widgets/submission_listener.dart';
+import '../widgets/submit_button.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => sl<LoginCubit>(),
+      child: const _LoginView(),
+    );
+  }
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginView extends StatefulWidget {
+  const _LoginView();
+
+  @override
+  State<_LoginView> createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<_LoginView> {
   final _cpfController = TextEditingController();
   final _passwordController = TextEditingController();
 
   bool _rememberMe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
 
   @override
   void dispose() {
@@ -33,13 +55,25 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  Future<void> _loadSavedCredentials() async {
+    final credentials = await context.read<LoginCubit>().savedCredentials();
+    if (!mounted || credentials == null) return;
+    _cpfController.text = credentials.cpf;
+    _passwordController.text = credentials.password;
+    setState(() => _rememberMe = true);
+  }
+
   void _submit() {
     final error = _validate();
     if (error != null) {
       showAppToast(context, error);
       return;
     }
-    context.go(AppRoutes.home);
+    context.read<LoginCubit>().submit(
+      cpf: _cpfController.text,
+      password: _passwordController.text,
+      remember: _rememberMe,
+    );
   }
 
   String? _validate() {
@@ -52,19 +86,21 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AuthLayout(
-        title: 'Bem vindo!',
-        subtitle: 'Aqui você gerencia seus seguros e de seus familiares em poucos cliques!',
-        cardMinHeightFactor: 0.4,
-        action: CircleArrowButton(onPressed: _submit),
-        footer: const Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg,
-            vertical: AppSpacing.md,
+      body: SubmissionListener<LoginCubit>(
+        child: AuthLayout(
+          title: 'Bem vindo!',
+          subtitle: 'Aqui você gerencia seus seguros e de seus familiares em poucos cliques!',
+          cardMinHeightFactor: 0.4,
+          action: SubmitButton<LoginCubit>(onPressed: _submit),
+          footer: const Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: AppSpacing.md,
+            ),
+            child: SocialAccess(),
           ),
-          child: SocialAccess(),
+          child: _buildForm(),
         ),
-        child: _buildForm(),
       ),
     );
   }

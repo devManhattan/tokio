@@ -9,6 +9,7 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 
 import '../../../../helpers/fake_webview_platform.dart';
 import '../../../../helpers/test_app.dart';
+import '../../../../helpers/test_environment.dart';
 
 const _products = ['Automóvel', 'Residência', 'Vida', 'Acidentes Pessoais'];
 
@@ -20,14 +21,15 @@ void main() {
     WebViewPlatform.instance = webViewPlatform;
   });
 
-  Future<void> pumpHome(WidgetTester tester) {
-    return pumpRouter(tester, initialLocation: AppRoutes.home);
+  Future<void> pumpHome(WidgetTester tester) async {
+    await TestEnvironment.setUp(user: testUser);
+    await pumpRouter(tester, initialLocation: AppRoutes.home);
   }
 
-  testWidgets('shows the user name', (tester) async {
+  testWidgets('shows the signed in user name', (tester) async {
     await pumpHome(tester);
 
-    expect(find.text(AppConstants.placeholderUserName), findsOneWidget);
+    expect(find.text(testUser.name), findsOneWidget);
   });
 
   testWidgets('shows the quote products', (tester) async {

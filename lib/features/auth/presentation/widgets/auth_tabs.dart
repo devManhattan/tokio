@@ -59,14 +59,15 @@ class _Tab extends StatelessWidget {
                 color: active ? AppColors.primary : AppColors.textPrimary,
               ),
             ),
-           if(active) AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              height: 3,
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(4),
+            if (active)
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                height: 3,
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(4),
+                ),
               ),
-            ),
           ],
         ),
       ),

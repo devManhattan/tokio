@@ -1,11 +1,13 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../auth/presentation/cubit/session_cubit.dart';
+import '../../../auth/presentation/cubit/session_state.dart';
 
 class _MenuItem {
   const _MenuItem(this.label, this.route);
@@ -75,7 +77,7 @@ class _NavigationPanel extends StatelessWidget {
                     onTap: () => _go(context, item.route),
                   ),
                 InkWell(
-                  onTap: () => context.go(AppRoutes.login),
+                  onTap: () => context.read<SessionCubit>().signOut(),
                   child: const Padding(
                     padding: EdgeInsets.fromLTRB(
                       _horizontalPadding,
@@ -123,13 +125,16 @@ class _DrawerHeader extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      AppConstants.placeholderUserName.toUpperCase(),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
+                    BlocSelector<SessionCubit, SessionState, String>(
+                      selector: (state) => state.user?.name ?? '',
+                      builder: (context, name) => Text(
+                        name.toUpperCase(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                     ),
                     const Row(
@@ -179,9 +184,7 @@ class _MenuTile extends StatelessWidget {
           children: [
             const Icon(Icons.settings, color: AppColors.primary, size: 20),
             const SizedBox(width: 16),
-            Expanded(
-              child: Text(label, style: const TextStyle(fontSize: 14)),
-            ),
+            Expanded(child: Text(label, style: const TextStyle(fontSize: 14))),
           ],
         ),
       ),
@@ -237,9 +240,7 @@ class _HelpBanner extends StatelessWidget {
     return Container(
       padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + bottomInset),
       decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.primary, AppColors.accent],
-        ),
+        gradient: LinearGradient(colors: [AppColors.primary, AppColors.accent]),
       ),
       child: const Column(
         mainAxisSize: MainAxisSize.min,

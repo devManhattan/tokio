@@ -1,24 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/di/injector.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/app_toast.dart';
-import '../../../../core/widgets/circle_arrow_button.dart';
+import '../cubit/forgot_password_cubit.dart';
 import '../widgets/auth_layout.dart';
+import '../widgets/submission_listener.dart';
+import '../widgets/submit_button.dart';
 
-class ForgotPasswordPage extends StatefulWidget {
+class ForgotPasswordPage extends StatelessWidget {
   const ForgotPasswordPage({super.key});
 
   @override
-  State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => sl<ForgotPasswordCubit>(),
+      child: const _ForgotPasswordView(),
+    );
+  }
 }
 
-class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
+class _ForgotPasswordView extends StatefulWidget {
+  const _ForgotPasswordView();
+
+  @override
+  State<_ForgotPasswordView> createState() => _ForgotPasswordViewState();
+}
+
+class _ForgotPasswordViewState extends State<_ForgotPasswordView> {
   final _cpfController = TextEditingController();
 
   @override
@@ -33,6 +49,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       showAppToast(context, error);
       return;
     }
+    context.read<ForgotPasswordCubit>().submit(cpf: _cpfController.text);
+  }
+
+  void _onSent() {
     showAppToast(
       context,
       'Enviamos as instruções de recuperação para o seu e-mail.',
@@ -52,31 +72,34 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AuthLayout(
-        title: 'Recuperar senha',
-        subtitle: 'Informe o CPF cadastrado para receber as instruções de recuperação.',
-        cardMinHeightFactor: 0.25,
-        action: CircleArrowButton(onPressed: _submit),
-        child: Column(
-          children: [
-            AppTextField(
-              controller: _cpfController,
-              hint: 'CPF',
-              filled: false,
-              textAlign: TextAlign.center,
-              keyboardType: TextInputType.number,
-              textInputAction: TextInputAction.done,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            InkWell(
-              onTap: _back,
-              child: const Text(
-                'Voltar para o login',
-                style: TextStyle(color: AppColors.primary, fontSize: 13),
+      body: SubmissionListener<ForgotPasswordCubit>(
+        onSuccess: _onSent,
+        child: AuthLayout(
+          title: 'Recuperar senha',
+          subtitle: 'Informe o CPF cadastrado para receber as instruções de recuperação.',
+          cardMinHeightFactor: 0.25,
+          action: SubmitButton<ForgotPasswordCubit>(onPressed: _submit),
+          child: Column(
+            children: [
+              AppTextField(
+                controller: _cpfController,
+                hint: 'CPF',
+                filled: false,
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.number,
+                textInputAction: TextInputAction.done,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               ),
-            ),
-          ],
+              const SizedBox(height: AppSpacing.lg),
+              InkWell(
+                onTap: _back,
+                child: const Text(
+                  'Voltar para o login',
+                  style: TextStyle(color: AppColors.primary, fontSize: 13),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -22,7 +22,7 @@ class AppCheckbox extends StatelessWidget {
             color: value ? AppColors.primary : AppColors.textSecondary,
             width: 1.5,
           ),
-          shape: BoxShape.circle
+          shape: BoxShape.circle,
         ),
         child: value
             ? const Icon(Icons.check, size: 15, color: Colors.white)

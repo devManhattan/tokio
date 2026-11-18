@@ -4,9 +4,11 @@ import 'package:tokio_marine/features/auth/presentation/pages/login_page.dart';
 import 'package:tokio_marine/features/auth/presentation/pages/register_page.dart';
 
 import '../../../../helpers/test_app.dart';
+import '../../../../helpers/test_environment.dart';
 
 void main() {
   testWidgets('login is the initial screen', (tester) async {
+    await TestEnvironment.setUp();
     await pumpRouter(tester);
 
     expect(find.byType(LoginPage), findsOneWidget);
@@ -16,6 +18,7 @@ void main() {
   testWidgets('Cadastrar tab opens the register page and Entrar returns', (
     tester,
   ) async {
+    await TestEnvironment.setUp();
     await pumpRouter(tester);
 
     await tester.tap(find.text('Cadastrar'));
@@ -30,6 +33,7 @@ void main() {
   testWidgets('Esqueceu a senha? opens the recovery page and back returns', (
     tester,
   ) async {
+    await TestEnvironment.setUp();
     await pumpRouter(tester);
 
     await tester.tap(find.text('Esqueceu a senha?'));

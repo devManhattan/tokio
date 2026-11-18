@@ -17,9 +17,7 @@ class UserBanner extends StatelessWidget {
         vertical: 10,
       ),
       decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.primary, AppColors.accent],
-        ),
+        gradient: LinearGradient(colors: [AppColors.primary, AppColors.accent]),
       ),
       child: Row(
         children: [
