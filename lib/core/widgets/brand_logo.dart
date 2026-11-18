@@ -107,5 +107,6 @@ class _LogoMarkPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_LogoMarkPainter oldDelegate) => oldDelegate.color != color;
+  bool shouldRepaint(_LogoMarkPainter oldDelegate) =>
+      oldDelegate.color != color;
 }

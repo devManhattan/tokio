@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:tokio_marine/core/constants/app_constants.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:tokio_marine/core/router/app_routes.dart';
 import 'package:tokio_marine/features/auth/presentation/pages/login_page.dart';
 import 'package:tokio_marine/features/home/presentation/pages/home_page.dart';
 
 import '../../../../helpers/test_app.dart';
+import '../../../../helpers/test_environment.dart';
 
 const _menuItems = [
   'Home / Seguros',
@@ -30,18 +31,17 @@ Future<void> _openDrawer(WidgetTester tester) async {
 }
 
 void main() {
-  Future<void> pumpHome(WidgetTester tester) {
-    return pumpRouter(tester, initialLocation: AppRoutes.home);
+  Future<TestEnvironment> pumpHome(WidgetTester tester) async {
+    final environment = await TestEnvironment.setUp(user: testUser);
+    await pumpRouter(tester, initialLocation: AppRoutes.home);
+    return environment;
   }
 
   testWidgets('shows the user name and avatar', (tester) async {
     await pumpHome(tester);
     await _openDrawer(tester);
 
-    expect(
-      _inDrawer(AppConstants.placeholderUserName.toUpperCase()),
-      findsOneWidget,
-    );
+    expect(_inDrawer(testUser.name.toUpperCase()), findsOneWidget);
     expect(
       find.descendant(
         of: find.byType(Drawer),
@@ -93,14 +93,15 @@ void main() {
     }
   });
 
-  testWidgets('Sair returns to login', (tester) async {
-    await pumpHome(tester);
+  testWidgets('Sair signs out and returns to login', (tester) async {
+    final environment = await pumpHome(tester);
     await _openDrawer(tester);
 
     await tester.ensureVisible(_inDrawer('Sair'));
     await tester.tap(_inDrawer('Sair'));
     await tester.pumpAndSettle();
 
+    verify(() => environment.authRepository.signOut()).called(1);
     expect(find.byType(LoginPage), findsOneWidget);
   });
 }

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/brand_logo.dart';
 import '../../../../core/widgets/notification_bell.dart';
+import '../../../auth/presentation/cubit/session_cubit.dart';
+import '../../../auth/presentation/cubit/session_state.dart';
 import '../../../drawer/presentation/widgets/app_drawer.dart';
 import '../widgets/info_section.dart';
 import '../widgets/quote_section.dart';
@@ -85,7 +87,10 @@ class _HomeContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const UserBanner(name: AppConstants.placeholderUserName),
+          BlocSelector<SessionCubit, SessionState, String>(
+            selector: (state) => state.user?.name ?? '',
+            builder: (context, name) => UserBanner(name: name),
+          ),
           const QuoteSection(),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -95,8 +100,7 @@ class _HomeContent extends StatelessWidget {
                 const SectionTitle('Minha Família'),
                 InfoSection(
                   icon: Icons.add_circle_outline,
-                  message:
-                      'Adicione aqui membros da sua família e compartilhe os seguros com eles.',
+                  message: 'Adicione aqui membros da sua família e compartilhe os seguros com eles.',
                   onTap: () => context.push(AppRoutes.family),
                 ),
                 const SectionTitle('Contratados'),

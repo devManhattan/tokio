@@ -11,10 +11,18 @@ import 'product_card.dart';
 import 'section_title.dart';
 
 const List<InsuranceProduct> _products = [
-  InsuranceProduct(id: 'auto', label: 'Automóvel', icon: Icons.directions_car_outlined),
+  InsuranceProduct(
+    id: 'auto',
+    label: 'Automóvel',
+    icon: Icons.directions_car_outlined,
+  ),
   InsuranceProduct(id: 'home', label: 'Residência', icon: Icons.house_outlined),
   InsuranceProduct(id: 'life', label: 'Vida', icon: Icons.favorite_outline),
-  InsuranceProduct(id: 'accident', label: 'Acidentes Pessoais', icon: Icons.healing_outlined),
+  InsuranceProduct(
+    id: 'accident',
+    label: 'Acidentes Pessoais',
+    icon: Icons.healing_outlined,
+  ),
 ];
 
 class QuoteSection extends StatelessWidget {
